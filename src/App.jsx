@@ -1,40 +1,67 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState } from 'react';
 
 import Navbar from './components/Navbar';
 import WeatherDisplay from './components/WeatherDisplay';
 import Footer from './components/Footer';
-import './App.css'
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+import fetchWeatherData from "./services/fetchWeatherData";
+export default function App() {
+  const [city, setCity] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState({ error: false, message: "" });
+  const [weather, setWeather] = useState({
+    city: "",
+    country: "",
+    temp: "",
+    condition: "",
+    icon: "",
+    conditionText: "",
+    wind: "",
+    humidity: "",
+    last_updated: "",
+  });
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError({
+      error: false,
+      message: "",
+    });
+    try {
+      if (!city.trim()) {
+        throw { message: "Por favor, añade una ciudad" };
+      }
+
+      const weatherData = await fetchWeatherData(city);
+      setWeather(weatherData);
+    } catch (error) {
+      setError({
+        error: true,
+        message: error.message,
+      });
+    } finally {
+      setLoading(false);
+      setCity("");
+    }
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <Navbar
+        onSubmit={onSubmit}
+        loading={loading}
+        error={error}
+        city={city}
+        setCity={setCity}
+      />
+      <div className="jumbotron">
+        {weather.city && <WeatherDisplay weather={weather} />}
       </div>
-      <h1>Vite + React</h1>
-      <h2>NEW PROYECT WEATHER API</h2>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Footer />
     </>
   )
 }
 
-export default App
+
