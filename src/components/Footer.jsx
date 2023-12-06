@@ -1,6 +1,6 @@
 const Footer = () => {
     return (
-        <Footer className="bg-body-light text-white">
+        <footer className="bg-body-light text-white">
             <div className="container pt-5 pb-2">
                 <p className="text-secondary text center">
                     Powered by:{" "}
@@ -34,7 +34,7 @@ const Footer = () => {
                     </a>
                 </div>
             </div>
-        </Footer>
+        </footer>
     );
 };
 
